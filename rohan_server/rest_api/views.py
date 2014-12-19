@@ -7,14 +7,18 @@ from django.http import HttpResponse
 
 import rohan_model.users
 
+def test(request):
+	print "in test"
+	return render(request, 'postJson.html')
+
 def register(request):
-	# id = request.GET['id']
-	# firstName = request.GET['firstName']
-	# lastName = request.GET['lastName']
-	# email = request.GET['email']
-	# pushToken = request.GET['pushToken']
-	# register(id, firstName, lastName, email, pushToken)
-	return HttpResponse("1")
+	id_ = request.GET['id']
+	firstName = request.GET['firstName']
+	lastName = request.GET['lastName']
+	email = request.GET['email']
+	pushToken = request.GET['pushToken']
+	
+	return HttpResponse(json.dumps(rohan_model.users.register(id_, firstName, lastName, email, pushToken)))
 
 def login1(request):
 	print "in loging"
@@ -35,10 +39,11 @@ def login_s(request):
 
 def task_list_S(request):
 	if request.is_ajax():
-        if request.method == 'POST':
-        	print 'Raw Data: "%s"' % request.body
+		if request.method == 'POST':
+			print 'Raw Data: "%s"' % request.body
 	# email = request.POST['email']
 	# [,]
+	 
 	#retList = ['FE:AA:C5:AC:15:AA','DB:AC:08:7C:0B:62','FE:E2:C5:AC:15:69','FE:E2:C5:FF:FF:FF']
 	t1 = [["uuid",'FE:AA:C5:AC:15:AA'], ["state",0]]
 	t2 = [["uuid",'FE:AA:C5:AC:15:AA'], ["state",0]]

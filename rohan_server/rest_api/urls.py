@@ -4,8 +4,10 @@ from django.conf.urls import patterns, url
 import views
 
 urlpatterns = patterns('',
-	# # url(r'^register$', views.register,
- # #        name='register'),
+	url(r'^test$', views.test,
+		name='test'),
+	url(r'^register$', views.register,
+        name='register'),
 	url(r'^login$', views.login1,
         name='login'),
 
