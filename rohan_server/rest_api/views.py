@@ -7,6 +7,7 @@ from django.http import HttpResponse
 
 import rohan_model.users
 
+from rohan_model import images
 from rohan_model import users
 from rohan_model import lists
 from rohan_model import tasks
@@ -57,6 +58,40 @@ def login1(request):
 
     # Return the token
     return HttpResponse(json.dumps(token))
+
+
+@csrf_exempt
+def set_image(request):
+    print "set_image"
+
+    jObj = json.loads(request.body)
+
+    id = jObj['id']
+    image = jObj['image']
+
+    ret = images.set(id, image)
+
+    return HttpResponse(json.dumps(ret))
+
+@csrf_exempt
+def get_image(request):
+    print "set_image"
+
+    jObj = json.loads(request.body)
+
+    id = jObj['id']
+
+
+    image = images.set(id)
+
+    ret = {
+        "id": id,
+        "image": image
+    }
+
+    return HttpResponse(json.dumps(ret))
+
+
 
 @csrf_exempt
 def login_s(request):

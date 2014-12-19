@@ -28,6 +28,12 @@ urlpatterns = patterns('',
 	url(r'^task/list$', views.task_list_S,
         name='task_list'),
 
+    url(r'^image/set', views.set_image,
+        name='set_image'),
+
+    url(r'^image/get', views.get_image,
+        name='get_image'),
+
 	# url(r'^task/accept$', views.task_accept,
      #    name='task_accept'),
 	# url(r'^task/reject$', views.task_rejet,
