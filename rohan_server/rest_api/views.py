@@ -7,6 +7,10 @@ from django.http import HttpResponse
 
 import rohan_model.users
 
+from rohan_model import users
+from rohan_model import lists
+from rohan_model import tasks
+
 def test(request):
 	print "in test"
 	return render(request, 'postJson.html')
@@ -17,7 +21,8 @@ def register(request):
 	lastName = request.GET['lastName']
 	email = request.GET['email']
 	pushToken = request.GET['pushToken']
-	
+
+    # Return true/false
 	return HttpResponse(json.dumps(rohan_model.users.register(id_, firstName, lastName, email, pushToken)))
 
 def login1(request):
@@ -31,7 +36,9 @@ def login1(request):
 	# ans   = login("diamant.alon@gmail.com")
 
 	# pdb.set_trace()
-	return HttpResponse(json.dumps(ans))
+
+    # Return the token
+	return HttpResponse(json.dumps(token))
 
 def login_s(request):
 
@@ -44,6 +51,7 @@ def task_list_S(request):
 	if request.is_ajax():
 		if request.method == 'POST':
 			print 'Raw Data: "%s"' % request.body
+
 	# email = request.POST['email']
 	# [,]
 	 
@@ -55,40 +63,98 @@ def task_list_S(request):
 	# t5 = [uuid='FE:E2:C5:FF:FF:FF',state=2,task_list_name='OpenList_Normal', is_admin=0,task_list=[[task_id=23232, task_price=500, task_description='Taking a big coffee' , task_state=0 ]]
 	# t6 = [task_id=23232, task_price=1000, task_description='NOT YOUR TASK' , task_state=1 }
 	retList = [t1 ,t2 ,t3 ]
+    '''
 
-	return HttpResponse(json.dumps(retList))
+    token = ""
+    beacons = {
+        "beaconId" : "list name",
+        "beaconId2": "another list name"
+    }
 
+    myLists = []
+    for beaconId in beacons.keys():
+        if not lists.exists(beaconId, accessToken=token):
+            lists.new(beaconId, beacons[beaconId], [token], [token], True, accessToken=token)
+        myLists.append(lists.get(beaconId, accessToken=token))
+
+    # Replace the task IDs array with a tasks array
+    for currentList in myLists:
+        realTasks = []
+        for currentTask in currentList['tasks']:
+            realTasks.append(tasks.get(currentTask, accessToken=token))
+        currentList['tasks'] = realTasks
+
+	return HttpResponse(json.dumps(myLists))
 
 def task_accept_s(request):
-	# task_id, token
-	a=1
-	# pdb.set_trace()
-	a += 1
-	if (a %2) == 0:
-		retList = ["ok",""]
-		return HttpResponse(json.dumps(retList))
-	else: 
-		retList = ["error","taken"]
-		return HttpResponse(json.dumps(retList))
+
+    # task_id, token
+    '''
+    a=1
+    # pdb.set_trace()
+    a += 1
+    if (a %2) == 0:
+    retList = ["ok",""]
+    return HttpResponse(json.dumps(retList))
+    else:
+    retList = ["error","taken"]
+    return HttpResponse(json.dumps(retList))
+    '''
+
+    task_id = None
+    token = ''
+
+    result = tasks.accept(task_id, token, accessToken=token)
+
+    return HttpResponse(json.dumps(result))
 
 def task_rejet_S(request):
-	# task_id, token
-	return HttpResponse("ok")
+
+    task_id = None
+    token = ""
+
+    result = tasks.cancel(task_id, token, accessToken=token)
+
+
+    # task_id, token
+    return HttpResponse("ok")
 
 def task_finish_s(request):
 	# task_id, token
-	return HttpResponse("ok")
+
+    task_id = None
+    token = ""
+    imageUrl = ""
+
+    result = tasks.finish(task_id, token, imageUrl, accessToken=token)
+    return HttpResponse(json.dumps(result))
 
 def task_validate_S(request):
 	# task_id, approved,
-	return HttpResponse("ok")
+
+    task_id = None
+    token = ""
+
+    result = tasks.verify(task_id, accessToken=token)
+
+    return HttpResponse(json.dumps(result))
 
 def task_new_S(request):
 
-	return HttpResponse("ok")
+    token = ""
+    task_id = ""
+    task_name = ""
+    task_description = ""
+    task_points = 500
+    listId = ""
+
+    result = tasks.new(id, task_name, task_description, task_points, listId, accessToken=token)
+
+    return HttpResponse(json.dumps(result))
 
 
 def task_accept(request):
+    # What is the difference between task_accept and task_accept_s?
 	task_id = request.POST['task']
 
 
