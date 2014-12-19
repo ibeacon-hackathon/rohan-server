@@ -1,19 +1,19 @@
 
 <html>
 <head>
-    <script src="../jquery.js"></script>
+    <script src="jquery.js"></script>
     <script type="text/javascript">
       $(document).ready(function(){
-          alert("on");
+          // alert("on");
         //  $.post('list', {"task":"ground"},
         //    function(data) {
         //        alert(data);
         //    });
 
-        var person = {['FE:AA:C5:AC:15:AA','DB:AC:08:7C:0B:62','FE:E2:C5:AC:15:69','FE:E2:C5:FF:FF:FF']}
+        var person = JSON.stringify("{['FE:AA:C5:AC:15:AA','DB:AC:08:7C:0B:62','FE:E2:C5:AC:15:69','FE:E2:C5:FF:FF:FF']}")
         
         $.ajax({
-            url: 'http://127.0.0.1:8080/list',
+            url: 'http://192.168.1.162:8000/rest_api/task/list',
             type: 'post',
             dataType: 'json',
             success: function (data) {
@@ -25,3 +25,5 @@
     </script>
 </head>
 <body>
+</body>
+</html>
