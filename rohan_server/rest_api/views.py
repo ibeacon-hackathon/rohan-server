@@ -17,86 +17,93 @@ from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def test(request):
-    print "in test"
-    # print request.body
-    
-    jObj = json.loads(request.body)
-    print b
-    print b["b"]
-    # if request.is_ajax():
-    #   print "is ajax"
-    #   if request.method == 'POST':
-    #       print 'Raw Data: "%s"' % request.body
-    return HttpResponse(json.dumps(request.body))
+
+    ret = { "result": "error"}
+    try:
+        ret = json.loads(request.body)
+        ret = json.dumps({"result": ret})
+    except:
+        pass
+
+    return HttpResponse(ret, content_type="application/json")
+
 @csrf_exempt
 def register(request):
 
-    jObj = json.loads(request.body)
-    id_ = jObj['id']
-    firstName = jObj['firstName']
-    lastName = jObj['lastName']
-    email = jObj['email']
-    pushToken = jObj['pushToken']
+    ret = { "result": "error"}
+    try:
+        jObj = json.loads(request.body)
+        id_ = jObj['id']
+        firstName = jObj['firstName']
+        lastName = jObj['lastName']
+        email = jObj['email']
+        pushToken = jObj['pushToken']
+        ret = rohan_model.users.register(id_, firstName, lastName, email, pushToken)
+        ret = json.dumps({"result": ret})
+    except:
+        pass
 
     # Return true/false
-    return HttpResponse(json.dumps(rohan_model.users.register(id_, firstName, lastName, email, pushToken)))
+    return HttpResponse(ret, content_type="application/json")
 
 @csrf_exempt
 def login1(request):
-    print "in loging"
-    # email = request.GET['email']
-    jObj = json.loads(request.body)
 
-    
-    token = rohan_model.users.login(jObj['email'])
+    ret = { "result": "error"}
+    try:
+        jObj = json.loads(request.body)
 
-    # print ans
-    # pdb.set_trace()
-    # ans   = login("diamant.alon@gmail.com")
+        token = rohan_model.users.login(jObj['email'])
 
-    # pdb.set_trace()
+        ret = json.dumps({"authToken": token})
+    except:
+        pass
 
     # Return the token
-    return HttpResponse(json.dumps(token))
+    return HttpResponse(ret, content_type="application/json")
 
 
 @csrf_exempt
 def set_image(request):
-    print "set_image"
 
-    jObj = json.loads(request.body)
+    ret = { "result": "error"}
+    try:
+        jObj = json.loads(request.body)
 
-    id = jObj['id']
-    image = jObj['image']
+        id = jObj['id']
+        image = jObj['image']
 
-    ret = images.set(id, image)
+        ret = images.set(id, image)
+        ret = json.dumps({"result": ret})
+    except:
+        pass
 
-    return HttpResponse(json.dumps(ret))
+    return HttpResponse(ret, content_type="application/json")
 
 @csrf_exempt
 def get_image(request):
-    print "set_image"
 
-    jObj = json.loads(request.body)
+    ret = { "result": "error"}
+    try:
+        jObj = json.loads(request.body)
 
-    id = jObj['id']
-
-
-    image = images.set(id)
-
-    ret = {
-        "id": id,
-        "image": image
-    }
-
-    return HttpResponse(json.dumps(ret))
+        id = jObj['id']
 
 
+        image = images.get(id)
 
-@csrf_exempt
-def login_s(request):
+        ret = {
+            "id": id,
+            "image": image
+        }
 
-    return  HttpResponse("ok")
+        ret = json.dumps(ret)
+    except:
+        pass
+
+    return HttpResponse(ret, content_type="application/json")
+
+
 
 @csrf_exempt
 def task_list_S(request):
@@ -114,49 +121,64 @@ def task_list_S(request):
     t1 = [["uuid",'FE:AA:C5:AC:15:AA'], ["state",0]]
     t2 = [["uuid",'FE:AA:C5:AC:15:AA'], ["state",0]]
     t3 = [["uuid",'DB:AC:08:7C:0B:62'],["state",1], ["task_list_name",'Hezi List']]
-    # t4 = [[uuid,'FE:E2:C5:AC:15:69'],[state=2], ["task_list_name",'Open_Admind_List'], ["is_admin",1],["task_list",[[["task_id",23232], ["task_price",500], ["task_description",'Taking a big coffee'] , ["task_state",2] ] ] ] ] 
+    # t4 = [[uuid,'FE:E2:C5:AC:15:69'],[state=2], ["task_list_name",'Open_Admind_List'], ["is_admin",1],["task_list",[[["task_id",23232], ["task_price",500], ["task_description",'Taking a big coffee'] , ["task_state",2] ] ] ] ]
     # t5 = [uuid='FE:E2:C5:FF:FF:FF',state=2,task_list_name='OpenList_Normal', is_admin=0,task_list=[[task_id=23232, task_price=500, task_description='Taking a big coffee' , task_state=0 ]]
     # t6 = [task_id=23232, task_price=1000, task_description='NOT YOUR TASK' , task_state=1 }
     retList = [t1 ,t2 ,t3 ]
     '''
-    jObj = json.loads(request.body)
-    print jObj
-    # pdb.set_trace()
-    beacons=[]
-    for jo in jObj:
-        beacons.append(jo)
 
+    ret = { "result": "error"}
+    try:
+        jObj = json.loads(request.body)
 
-    beacons = [beaconId.replace(":","") for beaconId in beacons]
-    token = "alon"
-    
-    # beacons = [ "123", "4567", "8123" ]
+        token = 'alon' # default, remove this
+        if 'authToken' in jObj:
+            token = jObj['authToken']
+        beacons = []
+        for jo in jObj['beacons']:
+            beacons.append(jo)
 
-    myLists = []
-    for beaconId in beacons:
-        print "Handling beacon %s" % beaconId
-        if lists.exists(beaconId, accessToken=token):
-            print "Appending beaocn list to results"
-            myLists.append(lists.get(beaconId, accessToken=token))
-    # pdb.set_trace()
+        beacons = [beaconId.replace(":","") for beaconId in beacons]
 
-    print "Beacons list: %s" % str(myLists)
-    # Replace the task IDs array with a tasks array
-    for currentList in myLists:
-        realTasks = []
-        if 'tasks' in currentList:
-            for currentTask in currentList['tasks']:
-                atask = tasks.get(currentTask, accessToken=token)
-                if 'creationTime' in atask:
-                    del atask['creationTime']
-                if 'acceptedTime' in atask:
-                    del atask['acceptedTime']
-                if 'finishedTime' in atask:
-                    del atask['finishedTime']
-                realTasks.append(atask)
-        currentList['tasks'] = realTasks
+        # beacons = [ "123", "4567", "8123" ]
 
-    return HttpResponse(json.dumps(myLists))
+        myLists = []
+        for beaconId in beacons:
+            if lists.exists(beaconId, accessToken=token):
+                myLists.append(lists.get(beaconId, accessToken=token))
+
+        # Replace the task IDs array with a tasks array
+        for currentList in myLists:
+            realTasks = []
+
+            id = currentList['id']
+            currentList['id'] = "%s:%s:%s:%s:%s:%s" % (id[0:2], id[2:4], id[4:6], id[6:8], id[8:10], id[10:12])
+
+            if 'tasks' in currentList:
+                for currentTask in currentList['tasks']:
+                    atask = tasks.get(currentTask, accessToken=token)
+
+                    # Get rid of datetimes
+                    if 'creationTime' in atask and atask['creationTime']:
+                        atask['creationTime'] = atask['creationTime'].isoformat(' ')
+                    if 'acceptedTime' in atask and atask['acceptedTime']:
+                        atask['acceptedTime'] = atask['acceptedTime'].isoformat(' ')
+                    if 'finishedTime' in atask and atask['finishedTime']:
+                        atask['finishedTime'] = atask['finishedTime'].isoformat(' ')
+
+                    atask["list"] = "%s:%s:%s:%s:%s:%s" % (id[0:2], id[2:4], id[4:6], id[6:8], id[8:10], id[10:12])
+                    realTasks.append(atask)
+            currentList['tasks'] = realTasks
+
+        ret = myLists
+
+        ret = {"result": ret}
+
+        ret = json.dumps(ret)
+    except:
+        pass
+
+    return HttpResponse(ret, content_type="application/json")
 
 @csrf_exempt
 def task_accept_s(request):
@@ -173,96 +195,130 @@ def task_accept_s(request):
     retList = ["error","taken"]
     return HttpResponse(json.dumps(retList))
     '''
-    jObj = json.loads(request.body)
-    print jObj
+    ret = { "result": "error"}
+    try:
+        print "Got body: %s" % request.body
 
-    task_id = jObj["task_id"]
-    token = jObj["in_token"]
-    # token = "alon"
+        jObj = json.loads(request.body)
+        print jObj
 
-    result = tasks.accept(task_id, token, accessToken=token)
+        task_id = jObj["taskId"]
+        token = jObj["authToken"]
+        # token = "alon"
 
-    return HttpResponse(json.dumps(result))
+        result = tasks.accept(task_id, token, accessToken=token)
+
+        ret = result
+        ret = json.dumps({"result": ret})
+    except:
+        pass
+
+    return HttpResponse(ret, content_type="application/json")
+
 @csrf_exempt
 def task_rejet_S(request):
 
-    jObj = json.loads(request.body)
-    print jObj
+    ret = { "result": "error"}
+    try:
+        jObj = json.loads(request.body)
+        print jObj
 
-    task_id = jObj["task_id"]
-    token = jObj["in_token"]
-    # token = "alon"
-    # task_id = None
-    # token = ""
+        task_id = jObj["taskId"]
+        token = jObj["authToken"]
+        # token = "alon"
+        # task_id = None
+        # token = ""
 
-    result = tasks.cancel(task_id, token, accessToken=token)
+        result = tasks.cancel(task_id, token, accessToken=token)
 
+        ret = result
 
-    # task_id, token
-    return HttpResponse(json.dumps(result))
+        ret = json.dumps({"result": ret})
+    except:
+        pass
+
+    return HttpResponse(ret, content_type="application/json")
+
 @csrf_exempt
 def task_finish_s(request):
     # task_id, token
 
-    jObj = json.loads(request.body)
-    print jObj
+    ret = { "result": "error"}
+    try:
+        jObj = json.loads(request.body)
+        print jObj
 
-    task_id = jObj["task_id"]
-    token = jObj["in_token"]
-    # token = "alon"
-    imageUrl = jObj["image_url"]
+        task_id = jObj["taskId"]
+        token = jObj["authToken"]
+        # token = "alon"
+        imageUrl = jObj["imageUrl"]
 
 
-    # task_id = None
-    # token = ""
-    # imageUrl = ""
+        # task_id = None
+        # token = ""
+        # imageUrl = ""
 
-    result = tasks.finish(task_id, token, imageUrl, accessToken=token)
-    return HttpResponse(json.dumps(result))
+        result = tasks.finish(task_id, token, imageUrl, accessToken=token)
 
+        ret = result
+        ret = json.dumps({"result": ret})
+    except:
+        pass
+
+    return HttpResponse(ret, content_type="application/json")
 
 @csrf_exempt
 def task_validate_S(request):
     # task_id, approved,
 
-    jObj = json.loads(request.body)
-    print jObj
+    ret = { "result": "error"}
+    try:
+        jObj = json.loads(request.body)
+        print jObj
 
-    task_id = jObj["task_id"]
-    token = jObj["in_token"]
-    # token = "alon"
-    # task_id = None
-    # token = ""
-    print "task_id=%s token=%s " % (task_id,token)
-    result = tasks.verify(task_id, accessToken=token)
+        task_id = jObj["taskId"]
+        token = jObj["authToken"]
+        # token = "alon"
+        # task_id = None
+        # token = ""
+        print "task_id=%s token=%s " % (task_id,token)
+        result = tasks.verify(task_id, accessToken=token)
+        ret = result
 
-    return HttpResponse(json.dumps(result))
+        ret = json.dumps({"result": ret})
+    except:
+        pass
+
+    return HttpResponse(ret, content_type="application/json")
+
 @csrf_exempt
 def task_new_S(request):
 
-    jObj = json.loads(request.body)
-    print jObj
+    ret = { "result": "error"}
+    try:
+        jObj = json.loads(request.body)
+        print jObj
 
-    task_id = jObj["task_id"]
-    token = jObj["in_token"]
-    task_name = jObj["task_name"]
-    task_description = jObj["task_name"]
-    task_points =  jObj["task_points"]
-    listId =  jObj["list_id"]
-    # token = ""
-    # task_id = ""
-    # task_name = ""
-    # task_description = ""
-    # task_points = 500
-    # listId = ""
+        task_id = jObj["taskId"]
+        token = jObj["authToken"]
+        task_name = jObj["taskName"]
+        task_description = jObj["taskDescription"]
+        task_points =  int(jObj["taskPoints"])
+        listId =  jObj["listId"].replace(":","")
+        # token = ""
+        # task_id = ""
+        # task_name = ""
+        # task_description = ""
+        # task_points = 500
+        # listId = ""
 
-    result = tasks.new(task_id, task_name, task_description, task_points, listId, accessToken=token)
+        result = tasks.new(task_id, task_name, task_description, task_points, listId, accessToken=token)
 
-    return HttpResponse(json.dumps(result))
+        ret = result
+        ret = json.dumps({"result": ret})
+    except:
+        pass
 
-@csrf_exempt
-def task_accept(request):
-    # What is the difference between task_accept and task_accept_s?
-    task_id = request.POST['task']
+    return HttpResponse(ret, content_type="application/json")
 
 
