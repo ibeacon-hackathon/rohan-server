@@ -9,7 +9,7 @@ import rohan_model.users
 
 def test(request):
 	print "in test"
-	return render(request, 'rest_api/postJson.html')
+	return render(request, 'postJson.html')
 
 def register(request):
 	id_ = request.GET['id']
@@ -24,7 +24,7 @@ def login1(request):
 	print "in loging"
 	email = request.GET['email']
 	pdb.set_trace()
-	ans = rohan_model.users.login(email)
+	token = rohan_model.users.login(email)
 
 	# print ans
 	# pdb.set_trace()
@@ -38,11 +38,12 @@ def login_s(request):
 	return  HttpResponse("ok")
 
 def task_list_S(request):
-	print "in tasklists"
+
+    '''
+
 	if request.is_ajax():
-		print "is ajax"
-		# if request.method == 'POST':
-		# 	print 'Raw Data: "%s"' % request.body
+		if request.method == 'POST':
+			print 'Raw Data: "%s"' % request.body
 	# email = request.POST['email']
 	# [,]
 	 

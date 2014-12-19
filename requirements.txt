@@ -1,0 +1,5 @@
+argparse==1.2.1
+-e git://github.com/assisantunes/python-firebase.git@28a8f45d7b18e487d6ddf85c136f814efd389843#egg=python_firebase-master
+requests==1.2.3
+-e git://github.com/ibeacon-hackathon/rohan-model.git@9de4f548338168bc081ea464983cf06c5752b95c#egg=rohan_model-master
+wsgiref==0.1.2
